@@ -125,8 +125,8 @@ export default function NewCampaignPage() {
                         <div key={s.num} className="flex items-center gap-3 shrink-0">
                             <div className={`flex items-center gap-2.5 ${step === s.num ? 'text-white' : step > s.num ? 'text-indigo-400' : 'text-gray-600'}`}>
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all text-sm font-bold ${step > s.num ? 'bg-indigo-600 border-indigo-600' :
-                                        step === s.num ? 'border-indigo-500 bg-indigo-500/10' :
-                                            'border-gray-800 bg-gray-900'
+                                    step === s.num ? 'border-indigo-500 bg-indigo-500/10' :
+                                        'border-gray-800 bg-gray-900'
                                     }`}>
                                     {step > s.num ? <Check className="w-4 h-4 text-white" /> : s.num}
                                 </div>
@@ -376,8 +376,8 @@ function TargetingSelect({ label, value, onChange, options }: {
                         type="button"
                         onClick={() => onChange(opt.value)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${value === opt.value
-                                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300'
-                                : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+                            ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300'
+                            : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
                             }`}
                     >
                         {opt.label}
@@ -390,9 +390,9 @@ function TargetingSelect({ label, value, onChange, options }: {
 
 function ReviewRow({ label, value }: { label: string; value: string }) {
     return (
-        <div className="flex justify-between items-start gap-4 px-4 py-3 border-b border-white/5 last:border-0">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-4 px-4 py-3 border-b border-white/5 last:border-0">
             <span className="text-sm text-gray-500 shrink-0">{label}</span>
-            <span className="text-sm text-white text-right capitalize">{value}</span>
+            <span className="text-sm text-white text-left sm:text-right capitalize break-words w-full sm:w-auto">{value}</span>
         </div>
     );
 }

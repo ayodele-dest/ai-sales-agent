@@ -125,7 +125,7 @@ function DashboardContent() {
     return (
         <div className="min-h-screen bg-gray-950 text-white flex flex-col">
             {/* Sticky header */}
-            <header className="sticky top-0 z-20 bg-gray-950/90 backdrop-blur-xl border-b border-white/5 px-6 py-3.5">
+            <header className="sticky top-0 z-20 bg-gray-950/90 backdrop-blur-xl border-b border-white/5 px-4 md:px-6 py-3.5">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link href="/campaigns">
@@ -186,7 +186,7 @@ function DashboardContent() {
             </header>
 
             {/* Body */}
-            <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-6">
+            <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-6">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-full">
                     {/* Left column */}
                     <div className="space-y-4">

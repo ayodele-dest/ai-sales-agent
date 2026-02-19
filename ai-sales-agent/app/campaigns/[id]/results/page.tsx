@@ -170,44 +170,44 @@ export default function CampaignResultsPage() {
             )}
 
             {/* Header */}
-            <div className="border-b border-white/5 px-6 py-4 sticky top-0 bg-gray-950/90 backdrop-blur-xl z-10">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+            <div className="border-b border-white/5 px-4 md:px-6 py-4 sticky top-0 bg-gray-950/90 backdrop-blur-xl z-10">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 w-full md:w-auto">
                         <Link href="/campaigns">
-                            <button className="p-2 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-white">
+                            <button className="p-2 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-white shrink-0">
                                 <ArrowLeft className="w-4 h-4" />
                             </button>
                         </Link>
-                        <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-indigo-600 rounded-lg"><Bot className="w-4 h-4" /></div>
-                            <div>
-                                <h1 className="font-bold leading-tight">{campaign?.name ?? '...'}</h1>
-                                <p className="text-xs text-gray-500">{campaign?.industry} · {campaign?.location}</p>
+                        <div className="flex items-center gap-2 min-w-0">
+                            <div className="p-1.5 bg-indigo-600 rounded-lg shrink-0"><Bot className="w-4 h-4" /></div>
+                            <div className="min-w-0">
+                                <h1 className="font-bold leading-tight truncate">{campaign?.name ?? '...'}</h1>
+                                <p className="text-xs text-gray-500 truncate">{campaign?.industry} · {campaign?.location}</p>
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
                         <button
                             onClick={() => setModal('archive')}
-                            className="flex items-center gap-1.5 px-3 py-2 border border-amber-500/20 text-amber-400 hover:bg-amber-500/10 rounded-lg text-sm transition-all"
+                            className="flex items-center gap-1.5 px-3 py-2 border border-amber-500/20 text-amber-400 hover:bg-amber-500/10 rounded-lg text-sm transition-all whitespace-nowrap"
                         >
                             <Archive className="w-3.5 h-3.5" /> Archive
                         </button>
                         <button
                             onClick={() => setModal('delete')}
-                            className="flex items-center gap-1.5 px-3 py-2 border border-red-500/20 text-red-400 hover:bg-red-500/10 rounded-lg text-sm transition-all"
+                            className="flex items-center gap-1.5 px-3 py-2 border border-red-500/20 text-red-400 hover:bg-red-500/10 rounded-lg text-sm transition-all whitespace-nowrap"
                         >
                             <Trash2 className="w-3.5 h-3.5" /> Delete
                         </button>
                         <Link href={`/campaigns/${id}/edit`}>
-                            <button className="flex items-center gap-1.5 px-3 py-2 border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg text-sm transition-all">
+                            <button className="flex items-center gap-1.5 px-3 py-2 border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg text-sm transition-all whitespace-nowrap">
                                 Edit
                             </button>
                         </Link>
                         <button
                             onClick={handleRelaunch}
                             disabled={relaunching}
-                            className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-sm font-medium transition-all disabled:opacity-60"
+                            className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-sm font-medium transition-all disabled:opacity-60 whitespace-nowrap ml-auto md:ml-0"
                         >
                             {relaunching ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCcw className="w-4 h-4" />}
                             Relaunch
@@ -216,7 +216,7 @@ export default function CampaignResultsPage() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 py-6 space-y-5">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-5">
                 {/* Summary Stats */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
@@ -229,9 +229,9 @@ export default function CampaignResultsPage() {
                             <div className={`p-2.5 bg-${stat.color}-500/10 rounded-xl shrink-0`}>
                                 <stat.icon className={`w-4 h-4 text-${stat.color}-400`} />
                             </div>
-                            <div>
-                                <p className="text-xl font-bold">{stat.value}</p>
-                                <p className="text-xs text-gray-500">{stat.label}</p>
+                            <div className="min-w-0">
+                                <p className="text-xl font-bold truncate">{stat.value}</p>
+                                <p className="text-xs text-gray-500 truncate">{stat.label}</p>
                             </div>
                         </div>
                     ))}
@@ -249,8 +249,8 @@ export default function CampaignResultsPage() {
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                         {/* Run List sidebar */}
-                        <div className="space-y-2">
-                            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Run History</h2>
+                        <div className="space-y-2 max-h-64 overflow-y-auto lg:max-h-none pr-1 lg:pr-0">
+                            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3 sticky top-0 bg-gray-950/90 backdrop-blur pb-2 z-10">Run History</h2>
                             {runs.map((run, i) => (
                                 <div
                                     key={run.id}
@@ -298,7 +298,7 @@ export default function CampaignResultsPage() {
                             ) : selectedRun ? (
                                 <>
                                     {/* Controls bar */}
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                         <div className="relative flex-1">
                                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                             <input
@@ -313,18 +313,20 @@ export default function CampaignResultsPage() {
                                                 </button>
                                             )}
                                         </div>
-                                        <button
-                                            onClick={() => handleDownload(selectedRun.id, 'csv')}
-                                            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white border border-white/10 hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all shrink-0"
-                                        >
-                                            <FileText className="w-3.5 h-3.5" /> CSV
-                                        </button>
-                                        <button
-                                            onClick={() => handleDownload(selectedRun.id, 'json')}
-                                            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white border border-white/10 hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all shrink-0"
-                                        >
-                                            <FileJson className="w-3.5 h-3.5" /> JSON
-                                        </button>
+                                        <div className="flex items-center gap-3 self-end sm:self-auto">
+                                            <button
+                                                onClick={() => handleDownload(selectedRun.id, 'csv')}
+                                                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-white border border-white/10 hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all shrink-0"
+                                            >
+                                                <FileText className="w-3.5 h-3.5" /> CSV
+                                            </button>
+                                            <button
+                                                onClick={() => handleDownload(selectedRun.id, 'json')}
+                                                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-white border border-white/10 hover:bg-white/5 px-3 py-2.5 rounded-xl transition-all shrink-0"
+                                            >
+                                                <FileJson className="w-3.5 h-3.5" /> JSON
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {/* Results count */}
