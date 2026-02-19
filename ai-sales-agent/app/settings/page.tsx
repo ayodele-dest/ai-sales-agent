@@ -1,0 +1,348 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
+import {
+    Bot, ArrowLeft, LogOut, Mail, CheckCircle, AlertCircle,
+    Loader2, Eye, EyeOff, Trash2, SendHorizonal, Settings, Wifi, WifiOff,
+} from 'lucide-react';
+import type { EmailProvider } from '@/lib/email-connector-store';
+
+const PROVIDERS: { id: EmailProvider; label: string; icon: string; hint: string }[] = [
+    { id: 'gmail', label: 'Gmail', icon: 'G', hint: 'Use an App Password (not your main password). Enable 2FA → Google Account → Security → App Passwords.' },
+    { id: 'outlook', label: 'Outlook / Hotmail', icon: 'O', hint: 'Use an App Password from account.microsoft.com → Security → Advanced Security.' },
+    { id: 'yahoo', label: 'Yahoo Mail', icon: 'Y', hint: 'Generate an App Password from Yahoo Account Security settings.' },
+    { id: 'icloud', label: 'iCloud Mail', icon: '☁', hint: 'Generate an App-Specific Password from appleid.apple.com → Sign-In and Security.' },
+    { id: 'custom', label: 'Custom SMTP', icon: '⚙', hint: 'Use your own mail server. You will need host, port, username, and password.' },
+];
+
+interface FormState {
+    provider: EmailProvider;
+    fromName: string;
+    fromEmail: string;
+    smtpPassword: string;
+    // Custom SMTP only
+    smtpHost: string;
+    smtpPort: number;
+    smtpUser: string;
+    smtpSecure: boolean;
+}
+
+export default function SettingsPage() {
+    const { data: session } = useSession();
+    const [connected, setConnected] = useState(false);
+    const [connectedEmail, setConnectedEmail] = useState('');
+    const [connectedName, setConnectedName] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [testing, setTesting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+    const [form, setForm] = useState<FormState>({
+        provider: 'gmail',
+        fromName: '',
+        fromEmail: '',
+        smtpPassword: '',
+        smtpHost: '',
+        smtpPort: 587,
+        smtpUser: '',
+        smtpSecure: false,
+    });
+
+    const update = (field: keyof FormState, value: string | number | boolean) =>
+        setForm(prev => ({ ...prev, [field]: value }));
+
+    const selectedProvider = PROVIDERS.find(p => p.id === form.provider)!;
+
+    useEffect(() => {
+        fetch('/api/settings/email')
+            .then(r => r.json())
+            .then(d => {
+                if (d.connection) {
+                    setConnected(true);
+                    setConnectedEmail(d.connection.fromEmail);
+                    setConnectedName(d.connection.fromName);
+                    setForm(prev => ({
+                        ...prev,
+                        provider: d.connection.provider,
+                        fromName: d.connection.fromName,
+                        fromEmail: d.connection.fromEmail,
+                        smtpHost: d.connection.smtpHost,
+                        smtpPort: d.connection.smtpPort,
+                        smtpUser: d.connection.smtpUser,
+                        smtpSecure: d.connection.smtpSecure,
+                    }));
+                }
+            })
+            .finally(() => setLoading(false));
+    }, []);
+
+    const handleSave = async () => {
+        setSaving(true);
+        setError('');
+        setSuccess('');
+        try {
+            const res = await fetch('/api/settings/email', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form),
+            });
+            const json = await res.json();
+            if (!res.ok) { setError(json.error || 'Save failed'); return; }
+            setConnected(true);
+            setConnectedEmail(json.connection.fromEmail);
+            setConnectedName(json.connection.fromName);
+            setSuccess('Email account connected successfully!');
+        } catch { setError('Something went wrong.'); }
+        finally { setSaving(false); }
+    };
+
+    const handleTest = async () => {
+        setTesting(true);
+        setTestResult(null);
+        try {
+            const res = await fetch('/api/settings/email/test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form),
+            });
+            const json = await res.json();
+            setTestResult({ ok: res.ok, message: json.message || json.error || 'Unknown result' });
+        } catch { setTestResult({ ok: false, message: 'Request failed.' }); }
+        finally { setTesting(false); }
+    };
+
+    const handleDisconnect = async () => {
+        await fetch('/api/settings/email', { method: 'DELETE' });
+        setConnected(false);
+        setConnectedEmail('');
+        setConnectedName('');
+        setSuccess('Account disconnected.');
+        setForm(prev => ({ ...prev, fromName: '', fromEmail: '', smtpPassword: '' }));
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-950 text-white">
+            {/* Nav */}
+            <nav className="border-b border-white/5 px-8 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <Link href="/campaigns">
+                        <button className="p-2 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-white">
+                            <ArrowLeft className="w-4 h-4" />
+                        </button>
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        <div className="p-1.5 bg-indigo-600 rounded-lg"><Bot className="w-5 h-5" /></div>
+                        <span className="font-bold text-lg">SalesAgent AI</span>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-400">
+                        {session?.user?.name}
+                    </span>
+                    <button onClick={() => signOut({ callbackUrl: '/auth' })} className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors">
+                        <LogOut className="w-4 h-4" />
+                    </button>
+                </div>
+            </nav>
+
+            <div className="max-w-2xl mx-auto px-6 py-12">
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="p-2.5 bg-white/5 rounded-xl border border-white/10">
+                        <Settings className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold">Settings</h1>
+                        <p className="text-sm text-gray-500">Manage your account preferences</p>
+                    </div>
+                </div>
+
+                {/* Connected Status Banner */}
+                {connected && !loading && (
+                    <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <Wifi className="w-5 h-5 text-emerald-400 shrink-0" />
+                            <div>
+                                <p className="text-sm font-medium text-emerald-300">Email Connected</p>
+                                <p className="text-xs text-emerald-500">Sending as <strong>{connectedName}</strong> · {connectedEmail}</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleDisconnect}
+                            className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-400/40 px-3 py-1.5 rounded-lg transition-all"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" /> Disconnect
+                        </button>
+                    </div>
+                )}
+
+                {/* Email Connector Card */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+                    <div className="px-6 py-5 border-b border-white/5 flex items-center gap-3">
+                        <div className="p-2 bg-indigo-500/10 rounded-lg">
+                            <Mail className="w-5 h-5 text-indigo-400" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Email Account</h2>
+                            <p className="text-xs text-gray-500">Outreach emails will be sent from this account</p>
+                        </div>
+                        {connected ? (
+                            <span className="ml-auto flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
+                                <CheckCircle className="w-3.5 h-3.5" /> Connected
+                            </span>
+                        ) : (
+                            <span className="ml-auto flex items-center gap-1.5 text-xs text-gray-500">
+                                <WifiOff className="w-3.5 h-3.5" /> Not connected
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="p-6 space-y-5">
+                        {loading ? (
+                            <div className="flex justify-center py-8">
+                                <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+                            </div>
+                        ) : (
+                            <>
+                                {/* Provider Picker */}
+                                <div>
+                                    <label className={labelCls}>Email Provider</label>
+                                    <div className="grid grid-cols-5 gap-2">
+                                        {PROVIDERS.map(p => (
+                                            <button
+                                                key={p.id}
+                                                type="button"
+                                                onClick={() => update('provider', p.id)}
+                                                className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border text-xs font-medium transition-all ${form.provider === p.id
+                                                        ? 'bg-indigo-500/10 border-indigo-500/40 text-indigo-300'
+                                                        : 'border-white/10 text-gray-500 hover:border-white/20 hover:text-gray-300'
+                                                    }`}
+                                            >
+                                                <span className="text-xl leading-none">{p.icon}</span>
+                                                {p.label.split(' ')[0]}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <p className="mt-2 text-xs text-amber-400/80 bg-amber-400/5 border border-amber-400/10 rounded-lg px-3 py-2">
+                                        💡 {selectedProvider.hint}
+                                    </p>
+                                </div>
+
+                                {/* From Name & Email */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Field label="From Name">
+                                        <input value={form.fromName} onChange={e => update('fromName', e.target.value)} placeholder="Your Name or Company" className={inputCls} />
+                                    </Field>
+                                    <Field label="From Email">
+                                        <input value={form.fromEmail} onChange={e => update('fromEmail', e.target.value)} type="email" placeholder="you@example.com" className={inputCls} />
+                                    </Field>
+                                </div>
+
+                                {/* App Password */}
+                                <Field label={form.provider === 'custom' ? 'SMTP Password' : 'App Password'}>
+                                    <div className="relative">
+                                        <input
+                                            value={form.smtpPassword}
+                                            onChange={e => update('smtpPassword', e.target.value)}
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder={connected ? '••••••••  (leave blank to keep current)' : 'Enter app password...'}
+                                            className={`${inputCls} pr-10`}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(s => !s)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                                        >
+                                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
+                                    </div>
+                                </Field>
+
+                                {/* Custom SMTP Fields */}
+                                {form.provider === 'custom' && (
+                                    <div className="space-y-4 p-4 bg-black/20 border border-white/5 rounded-xl">
+                                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">SMTP Server</p>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <div className="col-span-2">
+                                                <Field label="SMTP Host">
+                                                    <input value={form.smtpHost} onChange={e => update('smtpHost', e.target.value)} placeholder="smtp.example.com" className={inputCls} />
+                                                </Field>
+                                            </div>
+                                            <Field label="Port">
+                                                <input value={form.smtpPort} onChange={e => update('smtpPort', parseInt(e.target.value) || 587)} type="number" className={inputCls} />
+                                            </Field>
+                                        </div>
+                                        <Field label="SMTP Username">
+                                            <input value={form.smtpUser} onChange={e => update('smtpUser', e.target.value)} placeholder="Usually your email address" className={inputCls} />
+                                        </Field>
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" checked={form.smtpSecure} onChange={e => update('smtpSecure', e.target.checked)} className="w-4 h-4 accent-indigo-500" />
+                                            <span className="text-sm text-gray-400">Use SSL/TLS (port 465)</span>
+                                        </label>
+                                    </div>
+                                )}
+
+                                {/* Feedback */}
+                                {error && <Alert type="error" message={error} />}
+                                {success && <Alert type="success" message={success} />}
+                                {testResult && (
+                                    <Alert type={testResult.ok ? 'success' : 'error'} message={testResult.message} />
+                                )}
+
+                                {/* Action Buttons */}
+                                <div className="flex gap-3 pt-1">
+                                    <button
+                                        onClick={handleTest}
+                                        disabled={testing || !form.fromEmail || (!form.smtpPassword && !connected)}
+                                        className="flex items-center gap-2 px-4 py-2.5 border border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-xl text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                    >
+                                        {testing ? <Loader2 className="w-4 h-4 animate-spin" /> : <SendHorizonal className="w-4 h-4" />}
+                                        {testing ? 'Testing...' : 'Send Test Email'}
+                                    </button>
+                                    <button
+                                        onClick={handleSave}
+                                        disabled={saving || !form.fromName || !form.fromEmail || (!form.smtpPassword && !connected)}
+                                        className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                    >
+                                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                                        {saving ? 'Saving...' : connected ? 'Update Connection' : 'Connect Account'}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const inputCls = "w-full bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all";
+const labelCls = "block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider";
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+    return (
+        <div>
+            <label className={labelCls}>{label}</label>
+            {children}
+        </div>
+    );
+}
+
+function Alert({ type, message }: { type: 'success' | 'error'; message: string }) {
+    return (
+        <div className={`flex items-start gap-2.5 px-4 py-3 rounded-xl border text-sm ${type === 'success'
+                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+                : 'bg-red-500/10 border-red-500/20 text-red-300'
+            }`}>
+            {type === 'success'
+                ? <CheckCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                : <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />}
+            {message}
+        </div>
+    );
+}
