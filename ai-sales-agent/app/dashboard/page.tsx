@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { LeadsTable } from '@/components/dashboard/LeadsTable';
 import { StatusLog } from '@/components/dashboard/StatusLog';
@@ -9,7 +9,7 @@ import type { Lead } from '@/types';
 import Link from 'next/link';
 import { ArrowLeft, Bot, Target, MapPin, CheckCircle, Loader2, Download } from 'lucide-react';
 
-export default function DashboardPage() {
+function DashboardContent() {
     const searchParams = useSearchParams();
     const industry = searchParams.get('industry') ?? '';
     const location = searchParams.get('location') ?? '';
@@ -210,5 +210,17 @@ export default function DashboardPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function DashboardPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen bg-gray-950 text-white">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            </div>
+        }>
+            <DashboardContent />
+        </Suspense>
     );
 }
