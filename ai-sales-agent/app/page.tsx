@@ -52,12 +52,12 @@ export default function Home() {
           </div>
 
           <h1 className="text-5xl md:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white via-gray-200 to-gray-500 tracking-tight leading-none">
-            Find leads.<br />Send emails.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">Automatically.</span>
+            Build a predictable pipeline<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">without hiring an SDR.</span>
           </h1>
 
           <p className="text-lg text-gray-400 max-w-xl mx-auto">
-            Set your target industry, craft your outreach email once, and let the AI do the rest — cold outreach on autopilot.
+            Define your ideal client once. SalesAgent finds verified decision-makers and launches personalized outreach safely using your own mailbox.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
