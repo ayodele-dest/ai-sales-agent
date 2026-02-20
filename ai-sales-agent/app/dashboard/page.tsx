@@ -186,7 +186,33 @@ function DashboardContent() {
             </header>
 
             {/* Body */}
-            <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-6">
+            <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-6 space-y-6">
+
+                {/* Horizontal Funnel */}
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                    {[
+                        { label: 'Leads Found', value: leads.length || 0 },
+                        { label: 'Contacts Enriched', value: leads.filter(l => ['email_generating', 'sending', 'sent', 'failed'].includes(l.status)).length || 0 },
+                        { label: 'Emails Sent', value: sentCount || 0 },
+                        { label: 'Replies', value: 0 },
+                        { label: 'Meetings Booked', value: 0 },
+                    ].map((metric, i, arr) => (
+                        <div key={metric.label} className="relative bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col justify-center items-center text-center">
+                            <span className="text-2xl font-bold font-mono tracking-tight text-white mb-1">{metric.value}</span>
+                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{metric.label}</span>
+
+                            {/* Chevron connecting to next step (hidden on last item & mobile grid wrap) */}
+                            {i < arr.length - 1 && (
+                                <div className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 hidden lg:block text-gray-700">
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-full">
                     {/* Left column */}
                     <div className="space-y-4">
