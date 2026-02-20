@@ -1,7 +1,7 @@
 'use client';
 
 import { Lead } from '@/types';
-import { BadgeCheck, Mail, Building2, MapPin, Loader2, XCircle, ChevronDown } from 'lucide-react';
+import { BadgeCheck, Mail, Building2, MapPin, Loader2, XCircle, ChevronDown, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import React, { useState } from 'react';
 
@@ -102,14 +102,44 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
                                             </div>
                                         </td>
                                     </motion.tr>
-                                    {/* Expanded email row */}
-                                    {expanded === lead.id && lead.emailContent && (
+                                    {/* Expanded row details */}
+                                    {expanded === lead.id && (
                                         <tr className="bg-black/30 border-b border-white/5">
-                                            <td colSpan={4} className="px-5 py-4">
-                                                <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide font-medium">Email Sent</p>
-                                                <pre className="text-xs text-gray-300 whitespace-pre-wrap font-mono leading-relaxed max-h-48 overflow-y-auto bg-black/40 rounded-lg p-3 border border-white/5">
-                                                    {lead.emailContent}
-                                                </pre>
+                                            <td colSpan={4} className="px-5 py-5 space-y-6">
+                                                {/* Why selected section */}
+                                                <div>
+                                                    <p className="text-xs text-indigo-400 mb-2.5 uppercase tracking-wide font-semibold flex items-center gap-1.5">
+                                                        <Sparkles className="w-3.5 h-3.5" /> Why this lead was selected
+                                                    </p>
+                                                    <ul className="space-y-2 text-[13px] text-gray-300">
+                                                        <li className="flex items-center gap-2.5">
+                                                            <div className="w-1 h-1 bg-gray-500 rounded-full shrink-0" />
+                                                            Industry exact match
+                                                        </li>
+                                                        <li className="flex items-center gap-2.5">
+                                                            <div className="w-1 h-1 bg-gray-500 rounded-full shrink-0" />
+                                                            Company size within target range
+                                                        </li>
+                                                        <li className="flex items-center gap-2.5">
+                                                            <div className="w-1 h-1 bg-gray-500 rounded-full shrink-0" />
+                                                            Decision-maker identified
+                                                        </li>
+                                                        <li className="flex items-center gap-2.5">
+                                                            <div className="w-1 h-1 bg-gray-500 rounded-full shrink-0" />
+                                                            Active website detected
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                                {/* Email content if available */}
+                                                {lead.emailContent && (
+                                                    <div>
+                                                        <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide font-medium">Email Sent</p>
+                                                        <pre className="text-xs text-gray-300 whitespace-pre-wrap font-mono leading-relaxed max-h-48 overflow-y-auto bg-black/40 rounded-lg p-3 border border-white/5">
+                                                            {lead.emailContent}
+                                                        </pre>
+                                                    </div>
+                                                )}
                                             </td>
                                         </tr>
                                     )}
