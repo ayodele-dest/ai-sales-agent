@@ -21,6 +21,7 @@ interface WizardData {
     name: string;
     industry: string;
     location: string;
+    dealValue: string;
     targeting: Targeting;
     strategyOutcome: string;
     strategyCredibility: string;
@@ -62,6 +63,7 @@ export default function NewCampaignPage() {
         name: '',
         industry: '',
         location: '',
+        dealValue: '',
         targeting: DEFAULT_TARGETING,
         strategyOutcome: '',
         strategyCredibility: '',
@@ -95,13 +97,14 @@ export default function NewCampaignPage() {
                     name: data.name,
                     industry: data.industry,
                     location: data.location,
+                    dealValue: data.dealValue,
                     targeting: data.targeting,
                     emailTemplate: { subject: data.subject, body: data.body },
                 }),
             });
             const json = await res.json();
             if (!res.ok) { setError(json.error || 'Failed to create campaign'); setLoading(false); return; }
-            router.push(`/dashboard?campaignId=${json.campaign.id}&industry=${encodeURIComponent(data.industry)}&location=${encodeURIComponent(data.location)}`);
+            router.push(`/dashboard?campaignId=${json.campaign.id}&industry=${encodeURIComponent(data.industry)}&location=${encodeURIComponent(data.location)}&dealValue=${encodeURIComponent(data.dealValue)}`);
         } catch {
             setError('Something went wrong.');
             setLoading(false);
@@ -169,6 +172,22 @@ export default function NewCampaignPage() {
                                 </FormField>
                                 <FormField label="Target Location">
                                     <LocationAutocomplete value={data.location} onChange={v => update('location', v)} />
+                                </FormField>
+                                <FormField label="What is your average deal value?">
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span className="text-gray-500 sm:text-sm">$</span>
+                                        </div>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={data.dealValue}
+                                            onChange={e => update('dealValue', e.target.value)}
+                                            placeholder="e.g. 5000"
+                                            className={`${inputCls} pl-8`}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1.5">For estimating your pipeline value.</p>
                                 </FormField>
                             </motion.div>
                         )}
