@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     ArrowLeft, ArrowRight, Bot, Check, Loader2, Target, Mail,
-    Rocket, Sparkles, SlidersHorizontal
+    Rocket, Sparkles, SlidersHorizontal, Briefcase, MonitorPlay, Store, Home
 } from 'lucide-react';
 import Link from 'next/link';
 import { BusinessTypeSelect } from '@/components/ui/BusinessTypeSelect';
@@ -15,7 +15,7 @@ import type {
     HasWebsite, OperatingHours, Targeting
 } from '@/types';
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 0 | 1 | 2 | 3 | 4;
 
 interface WizardData {
     name: string;
@@ -53,9 +53,52 @@ Would you be open to a quick 10-minute chat this week?
 Best,
 [YOUR NAME]`;
 
+const TEMPLATES = [
+    {
+        id: 'agency', title: 'Agency Lead Gen', icon: Briefcase,
+        description: 'Find e-commerce brands and offer growth services.',
+        data: {
+            industry: 'E-commerce Brands',
+            targeting: { ...DEFAULT_TARGETING, businessSize: 'small' as BusinessSize, revenueRange: '250k_1m' as RevenueRange },
+            subject: 'Quick question about your ad strategy',
+            body: 'Hi {{contactName}},\n\nI noticed {{companyName}} is running some interesting ads.\n\nWe help e-com brands scale. Let\'s chat!'
+        }
+    },
+    {
+        id: 'saas', title: 'SaaS Demo Booking', icon: MonitorPlay,
+        description: 'Target B2B software companies for product demos.',
+        data: {
+            industry: 'B2B Software',
+            targeting: { ...DEFAULT_TARGETING, decisionMakerTitle: 'ceo_director' as DecisionMakerTitle },
+            subject: 'Improve retention for {{companyName}}',
+            body: 'Hey {{contactName}},\n\nSaw you guys are growing fast. We help SaaS cos cut churn by 20%.\n\nOpen to a quick demo?'
+        }
+    },
+    {
+        id: 'local', title: 'Local Service Outreach', icon: Store,
+        description: 'Reach out to local contractors and home services.',
+        data: {
+            industry: 'Home Services',
+            targeting: { ...DEFAULT_TARGETING, businessSize: 'small' as BusinessSize },
+            subject: 'More leads for {{companyName}}',
+            body: 'Hi {{contactName}},\n\nI help local contractors get 5-10 extra jobs a month.\n\nCan I send over a quick case study?'
+        }
+    },
+    {
+        id: 'realestate', title: 'Real Estate Investor', icon: Home,
+        description: 'Find property owners to make cash offers.',
+        data: {
+            industry: 'Property Owners',
+            targeting: { ...DEFAULT_TARGETING, companyAge: 'established' as CompanyAge },
+            subject: 'Offer for your property',
+            body: 'Hi {{contactName}},\n\nI\'m a local investor looking to buy properties in your area. Are you open to a cash offer for {{companyName}}?'
+        }
+    }
+];
+
 export default function NewCampaignPage() {
     const router = useRouter();
-    const [step, setStep] = useState<Step>(1);
+    const [step, setStep] = useState<Step>(0);
     const [emailTab, setEmailTab] = useState<'strategy' | 'ai-draft' | 'advanced'>('strategy');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -134,28 +177,69 @@ export default function NewCampaignPage() {
                 </div>
 
                 {/* Step Indicator */}
-                <div className="flex items-center gap-3 mb-10 overflow-x-auto pb-2">
-                    {steps.map((s, i) => (
-                        <div key={s.num} className="flex items-center gap-3 shrink-0">
-                            <div className={`flex items-center gap-2.5 ${step === s.num ? 'text-white' : step > s.num ? 'text-indigo-400' : 'text-gray-600'}`}>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all text-sm font-bold ${step > s.num ? 'bg-indigo-600 border-indigo-600' :
-                                    step === s.num ? 'border-indigo-500 bg-indigo-500/10' :
-                                        'border-gray-800 bg-gray-900'
-                                    }`}>
-                                    {step > s.num ? <Check className="w-4 h-4 text-white" /> : s.num}
+                {step > 0 && (
+                    <div className="flex items-center gap-3 mb-10 overflow-x-auto pb-2">
+                        {steps.map((s, i) => (
+                            <div key={s.num} className="flex items-center gap-3 shrink-0">
+                                <div className={`flex items-center gap-2.5 ${step === s.num ? 'text-white' : step > s.num ? 'text-indigo-400' : 'text-gray-600'}`}>
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all text-sm font-bold ${step > s.num ? 'bg-indigo-600 border-indigo-600' :
+                                        step === s.num ? 'border-indigo-500 bg-indigo-500/10' :
+                                            'border-gray-800 bg-gray-900'
+                                        }`}>
+                                        {step > s.num ? <Check className="w-4 h-4 text-white" /> : s.num}
+                                    </div>
+                                    <span className="text-sm font-medium hidden sm:block">{s.label}</span>
                                 </div>
-                                <span className="text-sm font-medium hidden sm:block">{s.label}</span>
+                                {i < steps.length - 1 && (
+                                    <div className={`h-px w-10 transition-all ${step > s.num ? 'bg-indigo-600' : 'bg-gray-800'}`} />
+                                )}
                             </div>
-                            {i < steps.length - 1 && (
-                                <div className={`h-px w-10 transition-all ${step > s.num ? 'bg-indigo-600' : 'bg-gray-800'}`} />
-                            )}
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
 
                 {/* Step Content */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-xl min-h-[420px]">
                     <AnimatePresence mode="wait">
+
+                        {/* STEP 0 — Templates */}
+                        {step === 0 && (
+                            <motion.div key="step0" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="space-y-6">
+                                <div className="text-center mb-8">
+                                    <h2 className="text-2xl font-bold mb-2">How would you like to start?</h2>
+                                    <p className="text-gray-400">Choose a proven template or start from scratch.</p>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {TEMPLATES.map(t => (
+                                        <button
+                                            key={t.id}
+                                            onClick={() => {
+                                                setData(prev => ({ ...prev, ...t.data }));
+                                                setStep(1);
+                                            }}
+                                            className="bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-white/10 p-5 rounded-2xl text-left transition-all group relative overflow-hidden"
+                                        >
+                                            <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+                                                <t.icon className="w-32 h-32 text-indigo-400" />
+                                            </div>
+                                            <div className="p-2.5 bg-indigo-500/10 w-fit rounded-xl mb-4 text-indigo-400">
+                                                <t.icon className="w-5 h-5" />
+                                            </div>
+                                            <h3 className="font-bold text-lg mb-1">{t.title}</h3>
+                                            <p className="text-sm text-gray-500">{t.description}</p>
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="mt-8 pt-6 border-t border-white/5 flex justify-center">
+                                    <button
+                                        onClick={() => setStep(1)}
+                                        className="text-gray-400 hover:text-white text-sm font-medium hover:underline underline-offset-4 decoration-white/20 hover:decoration-white transition-all focus:outline-none"
+                                    >
+                                        Or start from scratch
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
 
                         {/* STEP 1 — Basics */}
                         {step === 1 && (
@@ -475,7 +559,7 @@ export default function NewCampaignPage() {
                 </div>
 
                 {/* Navigation Buttons */}
-                {step < 4 && (
+                {step > 0 && step < 4 && (
                     <div className="flex justify-between mt-6">
                         <button
                             onClick={() => setStep(prev => (prev - 1) as Step)}
