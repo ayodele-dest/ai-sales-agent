@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import {
     Bot, ArrowLeft, LogOut, Mail, CheckCircle, AlertCircle,
-    Loader2, Trash2, SendHorizonal, Settings, Wifi, WifiOff, Shield
+    Loader2, Trash2, SendHorizonal, Settings, Wifi, WifiOff, Shield, Building
 } from 'lucide-react';
 import type { EmailProvider } from '@/lib/email-connector-store';
 
@@ -21,6 +21,10 @@ interface FormState {
     sendWindowStart: string;
     sendWindowEnd: string;
     timezone: string;
+    // Compliance
+    businessName: string;
+    businessAddress: string;
+    includeUnsubscribe: boolean;
     // Custom SMTP only
     smtpHost: string;
     smtpPort: number;
@@ -49,6 +53,9 @@ export default function SettingsPage() {
         sendWindowStart: '09:00',
         sendWindowEnd: '17:00',
         timezone: 'auto',
+        businessName: '',
+        businessAddress: '',
+        includeUnsubscribe: true,
         smtpHost: '',
         smtpPort: 587,
         smtpUser: '',
@@ -331,6 +338,58 @@ export default function SettingsPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Compliance & Footer Card */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden mt-6">
+                    <div className="px-6 py-5 border-b border-white/5 flex items-center gap-3">
+                        <div className="p-2 bg-amber-500/10 rounded-lg">
+                            <Building className="w-5 h-5 text-amber-400" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Compliance &amp; Footer</h2>
+                            <p className="text-xs text-gray-500">Required information for international email regulations</p>
+                        </div>
+                    </div>
+
+                    <div className="p-6 space-y-5">
+                        <Field label="Business Name">
+                            <input
+                                value={form.businessName}
+                                onChange={e => update('businessName', e.target.value)}
+                                placeholder="Your Official Company Name"
+                                className={inputCls}
+                            />
+                        </Field>
+
+                        <Field label="Business Address">
+                            <textarea
+                                value={form.businessAddress}
+                                onChange={e => update('businessAddress', e.target.value)}
+                                placeholder="123 Startup Blvd, Suite 100&#10;San Francisco, CA 94105"
+                                rows={3}
+                                className={`${inputCls} resize-none`}
+                            />
+                        </Field>
+
+                        <label className="flex items-start gap-3 p-4 bg-black/20 border border-white/5 rounded-xl cursor-pointer hover:bg-black/30 transition-colors">
+                            <div className="flex h-5 items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={form.includeUnsubscribe}
+                                    onChange={e => update('includeUnsubscribe', e.target.checked)}
+                                    className="w-4 h-4 rounded border-white/20 bg-black/50 text-indigo-500 focus:ring-indigo-500/50"
+                                />
+                            </div>
+                            <div>
+                                <span className="block text-sm font-medium text-white mb-0.5">Automatically include unsubscribe link</span>
+                                <span className="block text-xs text-gray-500 leading-relaxed">
+                                    Your outreach emails will include an unsubscribe option and business address to comply with international email regulations.
+                                </span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
             </div>
         </div>
     );
