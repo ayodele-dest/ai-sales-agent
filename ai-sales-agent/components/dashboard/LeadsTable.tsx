@@ -91,9 +91,14 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
                                             )}
                                         </td>
                                         <td className="px-5 py-3.5">
-                                            <div className="flex items-center gap-2">
-                                                <StatusBadge status={lead.status} />
-                                                <ChevronDown className={`w-3 h-3 text-gray-600 transition-transform ${expanded === lead.id ? 'rotate-180' : ''}`} />
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <StatusBadge status={lead.status} />
+                                                    <ChevronDown className={`w-3 h-3 text-gray-600 transition-transform ${expanded === lead.id ? 'rotate-180' : ''}`} />
+                                                </div>
+                                                <div className="text-[10px] font-medium text-indigo-300 ml-4 bg-indigo-500/10 border border-indigo-500/20 px-1.5 py-0.5 rounded">
+                                                    Fit Score: 82/100
+                                                </div>
                                             </div>
                                         </td>
                                     </motion.tr>
