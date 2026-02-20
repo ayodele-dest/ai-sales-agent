@@ -256,23 +256,26 @@ export default function SettingsPage() {
                                 )}
 
                                 {/* Action Buttons */}
-                                <div className="flex gap-3 pt-1">
-                                    <button
-                                        onClick={handleTest}
-                                        disabled={testing || !form.fromEmail}
-                                        className="flex items-center gap-2 px-4 py-2.5 border border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-xl text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                    >
-                                        {testing ? <Loader2 className="w-4 h-4 animate-spin" /> : <SendHorizonal className="w-4 h-4" />}
-                                        {testing ? 'Testing...' : 'Send Test Email'}
-                                    </button>
-                                    <button
-                                        onClick={handleSave}
-                                        disabled={saving || !form.fromName || !form.fromEmail}
-                                        className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                                    >
-                                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-                                        {saving ? 'Saving...' : connected ? 'Update Account Information' : 'Save Account Information'}
-                                    </button>
+                                <div>
+                                    <div className="flex gap-3 pt-1">
+                                        <button
+                                            onClick={handleTest}
+                                            disabled={testing || !form.fromEmail}
+                                            className="flex items-center gap-2 px-4 py-2.5 border border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-xl text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                        >
+                                            {testing ? <Loader2 className="w-4 h-4 animate-spin" /> : <SendHorizonal className="w-4 h-4" />}
+                                            {testing ? 'Testing...' : 'Send Test Email via Resend'}
+                                        </button>
+                                        <button
+                                            onClick={handleSave}
+                                            disabled={saving || !form.fromName || !form.fromEmail}
+                                            className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                        >
+                                            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                                            {saving ? 'Saving...' : connected ? 'Update Account Information' : 'Save Account Information'}
+                                        </button>
+                                    </div>
+                                    <p className="mt-2 text-[11px] text-gray-500 font-medium">Test how your email appears before launching campaigns.</p>
                                 </div>
                             </>
                         )}
