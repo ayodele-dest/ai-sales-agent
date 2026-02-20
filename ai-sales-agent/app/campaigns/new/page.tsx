@@ -28,6 +28,7 @@ interface WizardData {
     strategyCta: string;
     subject: string;
     body: string;
+    enableFollowUps: boolean;
 }
 
 const DEFAULT_TARGETING: Targeting = {
@@ -68,6 +69,7 @@ export default function NewCampaignPage() {
         strategyCta: '',
         subject: DEFAULT_TEMPLATE_SUBJECT,
         body: DEFAULT_TEMPLATE_BODY,
+        enableFollowUps: false,
     });
 
     const update = (field: keyof Omit<WizardData, 'targeting'>, value: string) =>
@@ -360,6 +362,55 @@ export default function NewCampaignPage() {
                                         </FormField>
                                     </div>
                                 )}
+
+                                {/* Follow-Up Automation Section */}
+                                <div className="mt-8 pt-8 border-t border-white/10">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h3 className="text-lg font-bold">Follow-Up Automation</h3>
+                                            <p className="text-gray-500 text-sm">Automatically follow up if they don't reply.</p>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                className="sr-only peer"
+                                                checked={data.enableFollowUps}
+                                                onChange={e => setData(prev => ({ ...prev, enableFollowUps: e.target.checked }))}
+                                            />
+                                            <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                        </label>
+                                    </div>
+
+                                    {data.enableFollowUps && (
+                                        <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold text-sm">1</div>
+                                                    <div>
+                                                        <p className="font-semibold text-sm">Follow-Up 1</p>
+                                                        <p className="text-xs text-gray-500">Send 3 days after initial email</p>
+                                                    </div>
+                                                </div>
+                                                <button className="text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors">Edit Email</button>
+                                            </div>
+                                            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold text-sm">2</div>
+                                                    <div>
+                                                        <p className="font-semibold text-sm">Follow-Up 2</p>
+                                                        <p className="text-xs text-gray-500">Send 7 days after initial email</p>
+                                                    </div>
+                                                </div>
+                                                <button className="text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors">Edit Email</button>
+                                            </div>
+                                            <div className="flex items-center justify-center pt-2">
+                                                <div className="bg-indigo-500/10 text-indigo-300 text-xs font-medium px-3 py-1.5 rounded-full border border-indigo-500/20">
+                                                    Stop sequence if reply detected
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </motion.div>
                         )}
 
