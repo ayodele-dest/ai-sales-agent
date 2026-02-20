@@ -22,6 +22,10 @@ interface WizardData {
     industry: string;
     location: string;
     targeting: Targeting;
+    strategyOutcome: string;
+    strategyCredibility: string;
+    strategyDifference: string;
+    strategyCta: string;
     subject: string;
     body: string;
 }
@@ -58,6 +62,10 @@ export default function NewCampaignPage() {
         industry: '',
         location: '',
         targeting: DEFAULT_TARGETING,
+        strategyOutcome: '',
+        strategyCredibility: '',
+        strategyDifference: '',
+        strategyCta: '',
         subject: DEFAULT_TEMPLATE_SUBJECT,
         body: DEFAULT_TEMPLATE_BODY,
     });
@@ -276,8 +284,8 @@ export default function NewCampaignPage() {
                                             key={tab.id}
                                             onClick={() => setEmailTab(tab.id as 'strategy' | 'ai-draft' | 'advanced')}
                                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${emailTab === tab.id
-                                                    ? 'bg-indigo-600 text-white shadow-sm'
-                                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                                ? 'bg-indigo-600 text-white shadow-sm'
+                                                : 'text-gray-400 hover:text-white hover:bg-white/5'
                                                 }`}
                                         >
                                             {tab.label}
@@ -286,8 +294,26 @@ export default function NewCampaignPage() {
                                 </div>
 
                                 {emailTab === 'strategy' && (
-                                    <div className="py-12 text-center border border-white/5 rounded-xl bg-black/20 text-gray-400 text-sm">
-                                        Strategy Mode UI coming soon...
+                                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                        <FormField label="1. What outcome do you help clients achieve?">
+                                            <input value={data.strategyOutcome} onChange={e => update('strategyOutcome', e.target.value)} placeholder="e.g. Increase reply rates by 3x" className={inputCls} />
+                                        </FormField>
+                                        <FormField label="2. What proof or credibility do you have?">
+                                            <input value={data.strategyCredibility} onChange={e => update('strategyCredibility', e.target.value)} placeholder="e.g. Helped Acme Corp close $50k last month" className={inputCls} />
+                                        </FormField>
+                                        <FormField label="3. What makes you different?">
+                                            <input value={data.strategyDifference} onChange={e => update('strategyDifference', e.target.value)} placeholder="e.g. We use AI to personalize every email" className={inputCls} />
+                                        </FormField>
+                                        <FormField label="4. What is your call to action?">
+                                            <input value={data.strategyCta} onChange={e => update('strategyCta', e.target.value)} placeholder="e.g. Open to a 10-min chat?" className={inputCls} />
+                                        </FormField>
+
+                                        <div className="pt-2">
+                                            <button type="button" className="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-xl transition-colors border border-white/10 flex items-center justify-center gap-2">
+                                                <Sparkles className="w-4 h-4" />
+                                                Generate Outreach Draft
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 
