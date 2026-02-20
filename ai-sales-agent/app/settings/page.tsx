@@ -168,6 +168,16 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
+                {/* Email Health Status */}
+                <div className="mb-6 bg-white/5 border border-white/10 rounded-2xl p-4">
+                    <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email Health Status</h2>
+                    <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-sm leading-none">🟢</span>
+                        <span className="font-medium text-white text-sm">Safe Volume Configuration</span>
+                    </div>
+                    <p className="text-xs text-gray-500">Based on your daily send limit and configuration.</p>
+                </div>
+
                 {/* Connected Status Banner */}
                 {connected && !loading && (
                     <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-between gap-4">
