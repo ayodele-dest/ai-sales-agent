@@ -96,13 +96,7 @@ export default function OnboardingPage() {
         { num: 3, label: 'Launch', icon: Rocket },
     ];
 
-    const inputCls = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all placeholder:text-gray-600";
-    const FormField = ({ label, children }: { label: string, children: React.ReactNode }) => (
-        <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">{label}</label>
-            {children}
-        </div>
-    );
+
 
     return (
         <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center pt-20 px-4 md:px-8">
@@ -248,6 +242,17 @@ export default function OnboardingPage() {
                     </div>
                 </div>
             </div>
+        </div>
+    );
+}
+
+const inputCls = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all placeholder:text-gray-600";
+
+function FormField({ label, children }: { label: string, children: React.ReactNode }) {
+    return (
+        <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-300">{label}</label>
+            {children}
         </div>
     );
 }

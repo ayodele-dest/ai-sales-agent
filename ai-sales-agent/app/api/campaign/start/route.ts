@@ -4,7 +4,7 @@ import { findLeads } from '@/lib/lead-finder';
 import { findContact } from '@/lib/scraper';
 import { generateEmail } from '@/lib/email-generator';
 import { sendEmail } from '@/lib/email-sender';
-import { getCampaignById, updateCampaignStatus } from '@/lib/campaign-store';
+import { getCampaignById, updateCampaignStatus, getCampaignsByUser } from '@/lib/campaign-store';
 import { getEmailConnection } from '@/lib/email-connector-store';
 import { createRun, completeRun } from '@/lib/campaign-runs-store';
 import type { Lead } from '@/types';
@@ -52,7 +52,20 @@ export async function POST(req: NextRequest) {
                 send({ type: 'LOG', message: `Sending as: ${fromLabel}` });
                 if (run) send({ type: 'RUN_STARTED', runId: run.id });
 
-                const leads = await findLeads(industry, location, targeting);
+                const isFirstCampaign = session?.user?.id
+                    ? getCampaignsByUser(session.user.id).length <= 1 // Includes the one we just created
+                    : false;
+
+                if (isFirstCampaign) {
+                    send({ type: 'LOG', message: "This is a test run to protect your mailbox. After this, you can scale." });
+                }
+
+                let leads = await findLeads(industry, location, targeting);
+
+                if (isFirstCampaign && leads.length > 5) {
+                    leads = leads.slice(0, 5);
+                }
+
                 send({ type: 'LEADS_FOUND', count: leads.length, leads });
 
                 for (let lead of leads) {
