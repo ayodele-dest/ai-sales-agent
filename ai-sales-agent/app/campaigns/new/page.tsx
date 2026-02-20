@@ -50,6 +50,7 @@ Best,
 export default function NewCampaignPage() {
     const router = useRouter();
     const [step, setStep] = useState<Step>(1);
+    const [emailTab, setEmailTab] = useState<'strategy' | 'ai-draft' | 'advanced'>('strategy');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [data, setData] = useState<WizardData>({
@@ -264,23 +265,59 @@ export default function NewCampaignPage() {
                                     <p className="text-gray-500 text-sm">Personalize with smart placeholders the AI will fill in for each contact.</p>
                                 </div>
 
-                                <div className="flex flex-wrap gap-2 p-3 bg-black/30 rounded-xl border border-white/5">
-                                    <span className="text-xs text-gray-500 w-full mb-1 font-medium">Available placeholders:</span>
-                                    {['{{companyName}}', '{{contactName}}', '{{industry}}', '{{location}}'].map(p => (
-                                        <span key={p} className="px-2 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 rounded text-xs font-mono cursor-pointer hover:bg-indigo-500/20"
-                                            onClick={() => update('body', data.body + p)}>
-                                            {p}
-                                        </span>
+                                {/* Email Tabs */}
+                                <div className="flex bg-black/40 p-1 rounded-xl border border-white/5 w-fit mb-2">
+                                    {[
+                                        { id: 'strategy', label: 'Strategy Mode' },
+                                        { id: 'ai-draft', label: 'AI Draft Mode' },
+                                        { id: 'advanced', label: 'Advanced Editor' }
+                                    ].map(tab => (
+                                        <button
+                                            key={tab.id}
+                                            onClick={() => setEmailTab(tab.id as 'strategy' | 'ai-draft' | 'advanced')}
+                                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${emailTab === tab.id
+                                                    ? 'bg-indigo-600 text-white shadow-sm'
+                                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                                }`}
+                                        >
+                                            {tab.label}
+                                        </button>
                                     ))}
                                 </div>
 
-                                <FormField label="Subject Line">
-                                    <input value={data.subject} onChange={e => update('subject', e.target.value)} className={inputCls} />
-                                </FormField>
+                                {emailTab === 'strategy' && (
+                                    <div className="py-12 text-center border border-white/5 rounded-xl bg-black/20 text-gray-400 text-sm">
+                                        Strategy Mode UI coming soon...
+                                    </div>
+                                )}
 
-                                <FormField label="Email Body">
-                                    <textarea value={data.body} onChange={e => update('body', e.target.value)} rows={10} className={`${inputCls} resize-none font-mono text-sm leading-relaxed`} />
-                                </FormField>
+                                {emailTab === 'ai-draft' && (
+                                    <div className="py-12 text-center border border-white/5 rounded-xl bg-black/20 text-gray-400 text-sm">
+                                        AI Draft Mode UI coming soon...
+                                    </div>
+                                )}
+
+                                {emailTab === 'advanced' && (
+                                    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                        <div className="flex flex-wrap gap-2 p-3 bg-black/30 rounded-xl border border-white/5">
+                                            <span className="text-xs text-gray-500 w-full mb-1 font-medium">Available placeholders:</span>
+                                            {['{{companyName}}', '{{contactName}}', '{{industry}}', '{{location}}'].map(p => (
+                                                <span key={p} className="px-2 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 rounded text-xs font-mono cursor-pointer hover:bg-indigo-500/20"
+                                                    onClick={() => update('body', data.body + p)}>
+                                                    {p}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        <FormField label="Subject Line">
+                                            <input value={data.subject} onChange={e => update('subject', e.target.value)} className={inputCls} />
+                                        </FormField>
+
+                                        <FormField label="Email Body">
+                                            <textarea value={data.body} onChange={e => update('body', e.target.value)} rows={10} className={`${inputCls} resize-none font-mono text-sm leading-relaxed`} />
+                                        </FormField>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
 
