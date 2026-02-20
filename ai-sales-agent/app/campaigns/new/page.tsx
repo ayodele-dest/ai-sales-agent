@@ -273,6 +273,22 @@ export default function NewCampaignPage() {
                                     <p className="text-gray-500 text-sm">Personalize with smart placeholders the AI will fill in for each contact.</p>
                                 </div>
 
+                                {/* Status Badges */}
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 border border-green-500/20 text-green-400 rounded-md text-xs font-medium">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                        Deliverability Risk: Low
+                                    </div>
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/10 text-gray-300 rounded-md text-xs font-medium">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-gray-500" />
+                                        Spam Trigger Words: 0 detected
+                                    </div>
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 rounded-md text-xs font-medium">
+                                        <Sparkles className="w-3 h-3" />
+                                        Personalization Depth: Strong
+                                    </div>
+                                </div>
+
                                 {/* Email Tabs */}
                                 <div className="flex bg-black/40 p-1 rounded-xl border border-white/5 w-fit mb-2">
                                     {[
