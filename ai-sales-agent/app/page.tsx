@@ -73,6 +73,21 @@ export default function Home() {
               </button>
             </Link>
           </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 pt-8 text-xs font-medium text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-gray-500" />
+              Uses your own mailbox (no mass sending servers)
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-gray-500" />
+              Smart daily sending limits
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-gray-500" />
+              Designed for agencies &amp; B2B service businesses
+            </div>
+          </div>
         </motion.div>
 
         {/* Feature Cards */}
