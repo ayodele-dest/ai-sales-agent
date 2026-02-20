@@ -7,7 +7,7 @@ import { StatusLog } from '@/components/dashboard/StatusLog';
 import { AgentCard } from '@/components/dashboard/AgentCard';
 import type { Lead } from '@/types';
 import Link from 'next/link';
-import { ArrowLeft, Bot, Target, MapPin, CheckCircle, Loader2, Download } from 'lucide-react';
+import { ArrowLeft, Bot, Target, MapPin, CheckCircle, Loader2, Download, Pause } from 'lucide-react';
 
 function DashboardContent() {
     const searchParams = useSearchParams();
@@ -172,10 +172,15 @@ function DashboardContent() {
                             </button>
                         )}
 
-                        {/* Status pill */}
+                        {/* Status pill & actions */}
                         {status === 'working' && (
-                            <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-lg text-blue-300 text-xs font-medium">
-                                <Loader2 className="w-3 h-3 animate-spin" /> Running
+                            <div className="flex items-center gap-2">
+                                <button className="flex items-center gap-1.5 border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 hover:text-amber-400 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
+                                    <Pause className="w-3.5 h-3.5" /> Pause
+                                </button>
+                                <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-lg text-blue-300 text-xs font-medium">
+                                    <Loader2 className="w-3 h-3 animate-spin" /> Running
+                                </div>
                             </div>
                         )}
                         {status === 'completed' && (

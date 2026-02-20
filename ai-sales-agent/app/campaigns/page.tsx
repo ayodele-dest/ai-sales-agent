@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import {
     Plus, Rocket, Users, Mail, ChevronRight, Bot, LogOut, Zap,
-    Pencil, Settings, BarChart3, RefreshCcw, LineChart, Download, Target,
+    Pencil, Settings, BarChart3, RefreshCcw, LineChart, Download, Target, Pause
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Campaign } from '@/lib/campaign-store';
@@ -185,6 +185,11 @@ export default function CampaignsPage() {
                                             <Pencil className="w-3.5 h-3.5" /> Edit
                                         </button>
                                     </Link>
+                                    {campaign.status === 'running' && (
+                                        <button className="flex items-center gap-1.5 border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 hover:text-amber-400 px-3 py-2 rounded-lg text-xs font-medium transition-colors">
+                                            <Pause className="w-3.5 h-3.5" /> Pause Campaign
+                                        </button>
+                                    )}
                                     {campaign.runCount > 0 && (
                                         <button
                                             onClick={e => handleRelaunch(campaign, e)}
