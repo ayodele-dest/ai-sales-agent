@@ -15,7 +15,7 @@ interface FormState {
     provider: EmailProvider;
     fromName: string;
     fromEmail: string;
-    smtpPassword: string;
+    replyToEmail: string;
     // Custom SMTP only
     smtpHost: string;
     smtpPort: number;
@@ -39,7 +39,7 @@ export default function SettingsPage() {
         provider: 'gmail',
         fromName: '',
         fromEmail: '',
-        smtpPassword: '',
+        replyToEmail: '',
         smtpHost: '',
         smtpPort: 587,
         smtpUser: '',
@@ -212,6 +212,14 @@ export default function SettingsPage() {
                                     <Field label="From Email">
                                         <input value={form.fromEmail} onChange={e => update('fromEmail', e.target.value)} type="email" placeholder="you@example.com" className={inputCls} />
                                     </Field>
+                                </div>
+
+                                {/* Reply-To Email */}
+                                <div>
+                                    <Field label="Reply-To Email">
+                                        <input value={form.replyToEmail} onChange={e => update('replyToEmail', e.target.value)} type="email" placeholder="replies@yourdomain.com" className={inputCls} />
+                                    </Field>
+                                    <p className="mt-1.5 text-[11px] text-gray-500 font-medium">If different from your sending address, replies will go here.</p>
                                 </div>
 
                                 {/* Feedback */}
