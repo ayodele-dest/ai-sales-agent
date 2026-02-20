@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import {
     Bot, ArrowLeft, LogOut, Mail, CheckCircle, AlertCircle,
-    Loader2, Trash2, SendHorizonal, Settings, Wifi, WifiOff,
+    Loader2, Trash2, SendHorizonal, Settings, Wifi, WifiOff, Shield
 } from 'lucide-react';
 import type { EmailProvider } from '@/lib/email-connector-store';
 
@@ -16,6 +16,11 @@ interface FormState {
     fromName: string;
     fromEmail: string;
     replyToEmail: string;
+    // Limits
+    dailyLimit: number;
+    sendWindowStart: string;
+    sendWindowEnd: string;
+    timezone: string;
     // Custom SMTP only
     smtpHost: string;
     smtpPort: number;
@@ -40,6 +45,10 @@ export default function SettingsPage() {
         fromName: '',
         fromEmail: '',
         replyToEmail: '',
+        dailyLimit: 20,
+        sendWindowStart: '09:00',
+        sendWindowEnd: '17:00',
+        timezone: 'auto',
         smtpHost: '',
         smtpPort: 587,
         smtpUser: '',
@@ -250,6 +259,76 @@ export default function SettingsPage() {
                                 </div>
                             </>
                         )}
+                    </div>
+                </div>
+
+                {/* Sending Limits Card */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden mt-6">
+                    <div className="px-6 py-5 border-b border-white/5 flex items-center gap-3">
+                        <div className="p-2 bg-rose-500/10 rounded-lg">
+                            <Shield className="w-5 h-5 text-rose-400" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Sending Limits &amp; Protection</h2>
+                            <p className="text-xs text-gray-500">Control when and how many emails are sent</p>
+                        </div>
+                    </div>
+
+                    <div className="p-6 space-y-6">
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* Daily Limit */}
+                            <div>
+                                <Field label="Daily Send Limit">
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={form.dailyLimit}
+                                        onChange={e => update('dailyLimit', parseInt(e.target.value) || 20)}
+                                        className={inputCls}
+                                    />
+                                </Field>
+                                <p className="mt-1.5 text-[11px] text-gray-500 font-medium">We recommend staying under 50/day for healthy deliverability.</p>
+                            </div>
+
+                            {/* Timezone */}
+                            <div>
+                                <Field label="Timezone">
+                                    <select
+                                        value={form.timezone}
+                                        onChange={e => update('timezone', e.target.value)}
+                                        className={inputCls}
+                                    >
+                                        <option value="auto">Auto-detect (System Default)</option>
+                                        <option value="America/New_York">Eastern Time (ET)</option>
+                                        <option value="America/Chicago">Central Time (CT)</option>
+                                        <option value="America/Denver">Mountain Time (MT)</option>
+                                        <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                        <option value="Europe/London">London (GMT/BST)</option>
+                                    </select>
+                                </Field>
+                            </div>
+                        </div>
+
+                        {/* Send Window */}
+                        <div>
+                            <label className={labelCls}>Send Window</label>
+                            <div className="flex items-center gap-3">
+                                <input
+                                    type="time"
+                                    value={form.sendWindowStart}
+                                    onChange={e => update('sendWindowStart', e.target.value)}
+                                    className={inputCls}
+                                />
+                                <span className="text-gray-500 font-medium text-sm">to</span>
+                                <input
+                                    type="time"
+                                    value={form.sendWindowEnd}
+                                    onChange={e => update('sendWindowEnd', e.target.value)}
+                                    className={inputCls}
+                                />
+                            </div>
+                            <p className="mt-1.5 text-[11px] text-gray-500 font-medium">Emails will only be sent during this time window.</p>
+                        </div>
                     </div>
                 </div>
             </div>
