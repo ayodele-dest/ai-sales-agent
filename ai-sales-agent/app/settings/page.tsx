@@ -5,17 +5,11 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import {
     Bot, ArrowLeft, LogOut, Mail, CheckCircle, AlertCircle,
-    Loader2, Eye, EyeOff, Trash2, SendHorizonal, Settings, Wifi, WifiOff,
+    Loader2, Trash2, SendHorizonal, Settings, Wifi, WifiOff,
 } from 'lucide-react';
 import type { EmailProvider } from '@/lib/email-connector-store';
 
-const PROVIDERS: { id: EmailProvider; label: string; icon: string; hint: string }[] = [
-    { id: 'gmail', label: 'Gmail', icon: 'G', hint: 'Use an App Password (not your main password). Enable 2FA → Google Account → Security → App Passwords.' },
-    { id: 'outlook', label: 'Outlook / Hotmail', icon: 'O', hint: 'Use an App Password from account.microsoft.com → Security → Advanced Security.' },
-    { id: 'yahoo', label: 'Yahoo Mail', icon: 'Y', hint: 'Generate an App Password from Yahoo Account Security settings.' },
-    { id: 'icloud', label: 'iCloud Mail', icon: '☁', hint: 'Generate an App-Specific Password from appleid.apple.com → Sign-In and Security.' },
-    { id: 'custom', label: 'Custom SMTP', icon: '⚙', hint: 'Use your own mail server. You will need host, port, username, and password.' },
-];
+
 
 interface FormState {
     provider: EmailProvider;
@@ -37,7 +31,6 @@ export default function SettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [testing, setTesting] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
@@ -55,8 +48,6 @@ export default function SettingsPage() {
 
     const update = (field: keyof FormState, value: string | number | boolean) =>
         setForm(prev => ({ ...prev, [field]: value }));
-
-    const selectedProvider = PROVIDERS.find(p => p.id === form.provider)!;
 
     useEffect(() => {
         fetch('/api/settings/email')
@@ -187,8 +178,13 @@ export default function SettingsPage() {
                             <Mail className="w-5 h-5 text-indigo-400" />
                         </div>
                         <div>
-                            <h2 className="font-semibold">Email Account</h2>
-                            <p className="text-xs text-gray-500">Outreach emails will be sent from this account</p>
+                            <div className="flex items-center gap-2 mb-0.5">
+                                <h2 className="font-semibold">Sending Identity</h2>
+                                <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-gray-400">
+                                    Sending via Resend (Free Plan)
+                                </span>
+                            </div>
+                            <p className="text-xs text-gray-500">Configure how your outreach emails appear to recipients.</p>
                         </div>
                         {connected ? (
                             <span className="ml-auto flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
@@ -208,30 +204,6 @@ export default function SettingsPage() {
                             </div>
                         ) : (
                             <>
-                                {/* Provider Picker */}
-                                <div>
-                                    <label className={labelCls}>Email Provider</label>
-                                    <div className="grid grid-cols-5 gap-2">
-                                        {PROVIDERS.map(p => (
-                                            <button
-                                                key={p.id}
-                                                type="button"
-                                                onClick={() => update('provider', p.id)}
-                                                className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border text-xs font-medium transition-all ${form.provider === p.id
-                                                        ? 'bg-indigo-500/10 border-indigo-500/40 text-indigo-300'
-                                                        : 'border-white/10 text-gray-500 hover:border-white/20 hover:text-gray-300'
-                                                    }`}
-                                            >
-                                                <span className="text-xl leading-none">{p.icon}</span>
-                                                {p.label.split(' ')[0]}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <p className="mt-2 text-xs text-amber-400/80 bg-amber-400/5 border border-amber-400/10 rounded-lg px-3 py-2">
-                                        💡 {selectedProvider.hint}
-                                    </p>
-                                </div>
-
                                 {/* From Name & Email */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <Field label="From Name">
@@ -241,50 +213,6 @@ export default function SettingsPage() {
                                         <input value={form.fromEmail} onChange={e => update('fromEmail', e.target.value)} type="email" placeholder="you@example.com" className={inputCls} />
                                     </Field>
                                 </div>
-
-                                {/* App Password */}
-                                <Field label={form.provider === 'custom' ? 'SMTP Password' : 'App Password'}>
-                                    <div className="relative">
-                                        <input
-                                            value={form.smtpPassword}
-                                            onChange={e => update('smtpPassword', e.target.value)}
-                                            type={showPassword ? 'text' : 'password'}
-                                            placeholder={connected ? '••••••••  (leave blank to keep current)' : 'Enter app password...'}
-                                            className={`${inputCls} pr-10`}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(s => !s)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
-                                        >
-                                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                        </button>
-                                    </div>
-                                </Field>
-
-                                {/* Custom SMTP Fields */}
-                                {form.provider === 'custom' && (
-                                    <div className="space-y-4 p-4 bg-black/20 border border-white/5 rounded-xl">
-                                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">SMTP Server</p>
-                                        <div className="grid grid-cols-3 gap-3">
-                                            <div className="col-span-2">
-                                                <Field label="SMTP Host">
-                                                    <input value={form.smtpHost} onChange={e => update('smtpHost', e.target.value)} placeholder="smtp.example.com" className={inputCls} />
-                                                </Field>
-                                            </div>
-                                            <Field label="Port">
-                                                <input value={form.smtpPort} onChange={e => update('smtpPort', parseInt(e.target.value) || 587)} type="number" className={inputCls} />
-                                            </Field>
-                                        </div>
-                                        <Field label="SMTP Username">
-                                            <input value={form.smtpUser} onChange={e => update('smtpUser', e.target.value)} placeholder="Usually your email address" className={inputCls} />
-                                        </Field>
-                                        <label className="flex items-center gap-2 cursor-pointer">
-                                            <input type="checkbox" checked={form.smtpSecure} onChange={e => update('smtpSecure', e.target.checked)} className="w-4 h-4 accent-indigo-500" />
-                                            <span className="text-sm text-gray-400">Use SSL/TLS (port 465)</span>
-                                        </label>
-                                    </div>
-                                )}
 
                                 {/* Feedback */}
                                 {error && <Alert type="error" message={error} />}
@@ -297,7 +225,7 @@ export default function SettingsPage() {
                                 <div className="flex gap-3 pt-1">
                                     <button
                                         onClick={handleTest}
-                                        disabled={testing || !form.fromEmail || (!form.smtpPassword && !connected)}
+                                        disabled={testing || !form.fromEmail}
                                         className="flex items-center gap-2 px-4 py-2.5 border border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-xl text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                                     >
                                         {testing ? <Loader2 className="w-4 h-4 animate-spin" /> : <SendHorizonal className="w-4 h-4" />}
@@ -305,11 +233,11 @@ export default function SettingsPage() {
                                     </button>
                                     <button
                                         onClick={handleSave}
-                                        disabled={saving || !form.fromName || !form.fromEmail || (!form.smtpPassword && !connected)}
+                                        disabled={saving || !form.fromName || !form.fromEmail}
                                         className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                                     >
                                         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-                                        {saving ? 'Saving...' : connected ? 'Update Connection' : 'Connect Account'}
+                                        {saving ? 'Saving...' : connected ? 'Update Account Information' : 'Save Account Information'}
                                     </button>
                                 </div>
                             </>
@@ -336,8 +264,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function Alert({ type, message }: { type: 'success' | 'error'; message: string }) {
     return (
         <div className={`flex items-start gap-2.5 px-4 py-3 rounded-xl border text-sm ${type === 'success'
-                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
-                : 'bg-red-500/10 border-red-500/20 text-red-300'
+            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+            : 'bg-red-500/10 border-red-500/20 text-red-300'
             }`}>
             {type === 'success'
                 ? <CheckCircle className="w-4 h-4 mt-0.5 shrink-0" />
